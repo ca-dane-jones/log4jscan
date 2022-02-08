@@ -18,7 +18,7 @@ import json
 from zipfile import ZipFile
 from datetime import date
 
-version="3.1.1"
+version="3.1.2"
 parser = argparse.ArgumentParser(description='Scans for and identifies the version of any JndiLookup.class files on attached filesystems.')
 starttime=time.time()
 scandate=str(date.today().year) + "-" + str(date.today().month) + "-" + str(date.today().day)
@@ -87,27 +87,55 @@ def initArgParser():
     #TODO: Move type definitions for -o to custom FileDirType type based on argparse.FileType
     
 def log(lvl, message):
+    """INTERNAL ONLY -- Sends message to screen and/or log file depending on runtime log level
+    and silent switch.  This function is called by the various loginfo, logdebug, logerror functions.
+    As such, those functions should be used in lieu of calling this function directly.
+
+    Args:
+        lvl (int): message log level
+        message (str): message 
+    """
     global args
     global logfile
+    
+    # Get current timestamp
     ct = str(datetime.datetime.now())
+    
     if args.loglevel >= lvl:
         if not args.silent:
             print(ct + " :: " + message)
         print(message, file=open(logfile, 'a+'))
 
 def loginfo(message):
+    """Sends info level messages to the screen and log file at runtime.  This function will filter out messages
+    if the runtime log level is lower than 1.
+
+    Args:
+        message (str): log message
+    """
     global args
     if args.loglevel >= 1:
         message="[INFO] " + message
         log(1, message)
     
 def logdebug(message):
+    """Sends debug level messages to the screen and log file at runtime.  This function will filter out messages
+    if the runtime log level is lower than 2.
+
+    Args:
+        message (str): log message
+    """
     global args
     if args.loglevel >= 2:
         message="[DEBUG] " + message
         log(2,message)
     
-def logerror(message):
+def logerror(message): 
+    """Sends error level messages to the screen and log file at runtime.
+
+    Args:
+        message (str): log message
+    """
     message="[ERROR] " + message
     log(0,message)
 
@@ -287,6 +315,8 @@ def initntdrives():
     for i in _:
         if ":" in i:
             drives.append(str(i).strip() + '\\\\')
+    # TODO: Add exclusion for recycle bin and verify exclusion code
+    
     logdebug("getntdrives() setting drives to [{0}]".format(drives))
     logdebug("Exiting getntdrives()")
 
@@ -404,6 +434,8 @@ def scanjar(path,jarlevel=1,jarlevelpath=""):
             shutil.rmtree(extractjardir)
 
 def cleanup():
+    #TODO: Move all cleanup work to this function
+    #TODO: Add clean-up argument switch
     if os.path.isdir(extractdir):
         shutil.rmtree(extractdir)
     if os.path.isdir(hnfdir):
@@ -430,6 +462,7 @@ elif os.name == "posix":
 for drive in drives:
     for root, dirs, files in os.walk(drive, topdown=True):
         if any(exclude in root for exclude in excludes):
+            logdebug('Skipping path [{0}] due to exclusion.'.format(os.path.join(root,file)))
             continue
         for file in files:
             filecount += 1
