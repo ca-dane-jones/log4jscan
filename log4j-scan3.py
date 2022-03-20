@@ -18,7 +18,7 @@ import json
 from zipfile import ZipFile
 from datetime import date
 
-version="3.1.2"
+version="3.1.3"
 parser = argparse.ArgumentParser(description='Scans for and identifies the version of any JndiLookup.class files on attached filesystems.')
 starttime=time.time()
 scandate=str(date.today().year) + "-" + str(date.today().month) + "-" + str(date.today().day)

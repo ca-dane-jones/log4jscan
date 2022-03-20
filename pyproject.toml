@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "log4jscan"
+version = "3.1.3"
+description = "Python script designed to iterate over .jar, .jar inside .jar, and .class files in attached file systems for instances of Apache's JndiLookup.class. Compatible with Python 2 and Python 3."
+authors = ["ca-dane-jones <ca.dane.jones@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^2.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
